@@ -70,3 +70,21 @@ class DepartmentSerializer(serializers.ModelSerializer):
         result = []
         result.extend(childrens)
         return result
+
+
+class FlatDepartmentSerializer(serializers.ModelSerializer):
+    """机构部门"""
+
+    class Meta:
+        model = models.Department
+        fields = (
+            'pk',
+            'name',
+            'parent',
+            'category',
+            'contact_name',
+            'contact_phone',
+            'contact_mobile',
+            'contact_fax',
+            'description',
+        )

@@ -57,7 +57,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField('办公电话', max_length=32, null=True, blank=True, help_text='办公电话')
     is_staff = models.BooleanField('可进入后台管理', default=False, help_text='可进入后台管理')
     is_active = models.BooleanField('允许登录', default=True, help_text='允许登录')
-    date_joined = models.DateTimeField('创建时间', default=timezone.now, help_text='创建时间')
+    date_joined = models.DateTimeField('创建时间', default=timezone.now, help_text='创建时间') 
     inner_code = models.CharField('内部工号', max_length=32, null=True, blank=True, help_text='内部工号')
     employee_position = models.CharField('职务', max_length=32, null=True, blank=True, help_text='职务')
     employee_rank = models.CharField('职别', max_length=32, choices=EMPLOYEE_RANKS, null=True, blank=True)

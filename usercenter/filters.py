@@ -8,5 +8,6 @@ class UserFullNameFilter(django_filters.FilterSet):
     class Meta:
         model = models.User
         fields = [
-            'full_name'
+            'full_name',
+            'department'
         ]
