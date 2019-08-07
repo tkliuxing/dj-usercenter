@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.models import Group
 
 from . import models
 
@@ -42,6 +43,30 @@ class UserSerializer(serializers.ModelSerializer):
             'employee_position',
             'employee_rank',
             'description',
+            'groups',
+        )
+
+
+class GroupUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = (
+            'pk',
+            'username',
+            'full_name'
+        )
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    """权限组"""
+    user = GroupUserSerializer(source='user_set', many=True, read_only=True)
+
+    class Meta:
+        model = Group
+        fields = (
+            'pk',
+            'name',
+            'user'
         )
 
 

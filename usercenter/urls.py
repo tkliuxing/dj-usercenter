@@ -5,6 +5,7 @@ from . import api
 
 router = routers.DefaultRouter()
 router.register(r'user', api.UserViewSet)
+router.register(r'group', api.GroupViewSet)
 router.register(r'department', api.TreeDepartmentViewSet)
 router.register(r'flatdepartment', api.DepartmentViewSet)
 router.register(r'changepwd', api.ChangePasswordApi)

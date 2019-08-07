@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Group
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions, filters
 from rest_framework.response import Response
@@ -37,10 +38,23 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = ['full_name']
 
     def perform_create(self, serializer):
-        instance = serializer.save()
+        super().perform_create(serializer)
         if self.request.data.get('password'):
-            instance.set_password(self.request.data.get('password'))
-            instance.save()
+            serializer.instance.set_password(self.request.data.get('password'))
+            serializer.instance.save()
+
+    def perform_update(self, serializer):
+        super().perform_update(serializer)
+        if self.request.data.get('password'):
+            serializer.instance.set_password(self.request.data.get('password'))
+            serializer.instance.save()
+
+
+class GroupViewSet(viewsets.ModelViewSet):
+    """权限组"""
+    queryset = Group.objects.all()
+    serializer_class = serializers.GroupSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class DepartmentViewSet(viewsets.ModelViewSet):
