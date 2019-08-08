@@ -85,3 +85,13 @@ class MyInfoViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
     def list(self, request, *args, **kwargs):
         serializer = self.serializer_class(request.user)
         return Response(serializer.data)
+
+
+class UserDepChangeViewSet(viewsets.ModelViewSet):
+    """用户部门变更"""
+    queryset = models.UserDepChange.objects.all()
+    serializer_class = serializers.UserDepChangeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['user', 'old_department', 'new_department']
+    search_fields = ['user__full_name']

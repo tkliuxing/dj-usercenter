@@ -132,3 +132,29 @@ class Department(MPTTModel):
     def get_dep_path_name(self):
         names = self.get_ancestors(include_self=True).values_list('name', flat=True)
         return "/".join(names)
+
+
+class UserDepChange(models.Model):
+    """用户部门变更记录"""
+    user = models.ForeignKey('User', verbose_name='用户', on_delete=models.CASCADE,
+                             help_text='用户', related_name='dep_changes')
+    old_department = models.ForeignKey('Department', verbose_name='老部门', related_name='+',
+                                       on_delete=models.CASCADE, help_text='老部门')
+    new_department = models.ForeignKey('Department', verbose_name='新部门', related_name='+',
+                                       on_delete=models.CASCADE, help_text='新部门')
+    create_time = models.DateTimeField('更改时间', auto_now_add=True, blank=True)
+
+    class Meta:
+        verbose_name = '用户部门变更记录'
+        verbose_name_plural = verbose_name
+        ordering = ['create_time']
+
+    def __str__(self):
+        return "{0} {1} {2}->{3}".format(
+            self.user.full_name, self.create_time, self.old_department, self.new_department
+        )
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super().save(force_insert, force_update, using, update_fields)
+        self.user.department = self.new_department
+        self.user.save()

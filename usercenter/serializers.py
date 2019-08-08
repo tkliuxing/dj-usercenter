@@ -113,3 +113,16 @@ class FlatDepartmentSerializer(serializers.ModelSerializer):
             'contact_fax',
             'description',
         )
+
+
+class UserDepChangeSerializer(serializers.ModelSerializer):
+    create_time = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = models.UserDepChange
+        fields = (
+            'user',
+            'old_department',
+            'new_department',
+            'create_time'
+        )
