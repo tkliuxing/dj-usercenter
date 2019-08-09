@@ -35,6 +35,14 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'phone',
             'mobile',
+            'sex',
+            'marital_status',
+            'home_address',
+            'birthplace',
+            'birthday',
+            'nationality',
+            'political_status',
+            'educational_level',
             'is_staff',
             'is_active',
             'date_joined',
@@ -73,6 +81,7 @@ class GroupSerializer(serializers.ModelSerializer):
 class DepartmentSerializer(serializers.ModelSerializer):
     """机构部门"""
     items = serializers.SerializerMethodField()
+    expand = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Department
@@ -87,6 +96,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
             'contact_fax',
             'description',
             'items',
+            'expand',
         )
 
     def get_items(self, obj):
@@ -95,6 +105,9 @@ class DepartmentSerializer(serializers.ModelSerializer):
         result = []
         result.extend(childrens)
         return result
+
+    def get_expand(self, obj):
+        return obj.is_root_node()
 
 
 class FlatDepartmentSerializer(serializers.ModelSerializer):

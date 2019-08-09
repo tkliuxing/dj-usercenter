@@ -9,6 +9,7 @@ from django.contrib.auth.models import (
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 
+
 # 用户控制器
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -57,10 +58,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField('办公电话', max_length=32, null=True, blank=True, help_text='办公电话')
     is_staff = models.BooleanField('可进入后台管理', default=False, help_text='可进入后台管理')
     is_active = models.BooleanField('允许登录', default=True, help_text='允许登录')
-    date_joined = models.DateTimeField('创建时间', default=timezone.now, help_text='创建时间') 
+    date_joined = models.DateTimeField('创建时间', default=timezone.now, help_text='创建时间')
     inner_code = models.CharField('内部工号', max_length=32, null=True, blank=True, help_text='内部工号')
     employee_position = models.CharField('职务', max_length=32, null=True, blank=True, help_text='职务')
     employee_rank = models.CharField('职别', max_length=32, choices=EMPLOYEE_RANKS, null=True, blank=True)
+    sex = models.CharField('性别', max_length=2, choices=(('男', '男'), ('女', '女'),), null=True, blank=True, help_text='性别')
+    marital_status = models.CharField('婚姻状况', help_text='婚姻状况', null=True, blank=True,
+                                      max_length=5, choices=(('已婚', '已婚'), ('未婚', '未婚'),))
+    home_address = models.CharField('家庭住址', help_text='家庭住址', max_length=200, null=True, blank=True)
+    birthplace = models.CharField('籍贯', help_text='籍贯', max_length=100, null=True, blank=True)
+    birthday = models.DateField('出生年月日', help_text='出生年月日', null=True, blank=True)
+    nationality = models.CharField('民族', help_text='民族', max_length=20, null=True, blank=True)
+    political_status = models.CharField('政治面貌', help_text='政治面貌', max_length=50, blank=True, null=True)
+    educational_level = models.CharField('文化程度', help_text='文化程度', max_length=20, blank=True, null=True)
     description = models.TextField('备注', null=True, blank=True, help_text='备注')
     department = models.ForeignKey('Department', null=True, blank=True, related_name='users',
                                    on_delete=models.SET_NULL, verbose_name='部门', help_text='部门')
