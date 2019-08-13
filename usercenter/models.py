@@ -74,6 +74,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     description = models.TextField('备注', null=True, blank=True, help_text='备注')
     department = models.ForeignKey('Department', null=True, blank=True, related_name='users',
                                    on_delete=models.SET_NULL, verbose_name='部门', help_text='部门')
+    sort_num = models.IntegerField('排序编号', help_text='排序编号', null=True, blank=True, default=0, db_index=True)
+    readed_licence = models.BooleanField('已阅读用户协议', help_text='已阅读用户协议', default=False, null=True, blank=True)
 
     objects = UserManager()
 
@@ -88,7 +90,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         #     ("can_audit_task", "可审批任务"),
         #     ("can_audit_work", "可审批工作纪实"),
         # )
-        ordering = ['pk']
+        ordering = ['department', 'sort_num']
 
     def get_full_name(self):
         return self.full_name

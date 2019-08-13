@@ -52,6 +52,7 @@ class UserSerializer(serializers.ModelSerializer):
             'employee_rank',
             'description',
             'groups',
+            'readed_licence',
         )
 
 
@@ -139,3 +140,36 @@ class UserDepChangeSerializer(serializers.ModelSerializer):
             'new_department',
             'create_time'
         )
+
+
+class DepartmentMoveSerializer(serializers.Serializer):
+    POSITION_CHOICES = (
+        ('first-child', '第一个子部门'),
+        ('last-child', '最后一个子部门'),
+        ('left', '之前'),
+        ('right', '之后'),
+    )
+    department = serializers.IntegerField(
+        label='当前部门ID',
+        help_text='当前部门ID'
+    )
+    target = serializers.IntegerField(
+        label='目标部门ID',
+        help_text='目标部门ID'
+    )
+    position = serializers.ChoiceField(
+        label='目标部门ID',
+        help_text='目标部门ID',
+        choices=POSITION_CHOICES
+    )
+
+    def update(self, instance, validated_data):
+        target = models.Department.objects.get(pk=validated_data['target'])
+        instance.move_to(target, validated_data['position'])
+        return instance
+
+    def create(self, validated_data):
+        department = models.Department.objects.get(pk=validated_data['department'])
+        target = models.Department.objects.get(pk=validated_data['target'])
+        department.move_to(target, validated_data['position'])
+        return department

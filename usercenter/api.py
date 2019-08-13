@@ -95,3 +95,17 @@ class UserDepChangeViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['user', 'old_department', 'new_department']
     search_fields = ['user__full_name']
+
+
+class DepartmentMoveView(viewsets.GenericViewSet):
+    queryset = models.Department.objects.none()
+    serializer_class = serializers.DepartmentMoveSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'error': False, 'msg': '修改成功'})
+        else:
+            return Response({'error': True, 'msg': serializer.errors})
