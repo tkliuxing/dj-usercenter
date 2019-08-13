@@ -40,11 +40,6 @@ class UserManager(BaseUserManager):
 
 # 用户模型
 class User(AbstractBaseUser, PermissionsMixin):
-    EMPLOYEE_RANKS = (
-        ('领导班子', '领导班子'),
-        ('中层干部', '中层干部'),
-        ('普通', '普通'),
-    )
     username_validator = UnicodeUsernameValidator()
     username = models.CharField(
         '用户名', max_length=150, unique=True,
@@ -61,7 +56,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField('创建时间', default=timezone.now, help_text='创建时间')
     inner_code = models.CharField('内部工号', max_length=32, null=True, blank=True, help_text='内部工号')
     employee_position = models.CharField('职务', max_length=32, null=True, blank=True, help_text='职务')
-    employee_rank = models.CharField('职别', max_length=32, choices=EMPLOYEE_RANKS, null=True, blank=True)
+    employee_rank = models.CharField('职级', help_text='职级', max_length=32, null=True, blank=True)
     sex = models.CharField('性别', max_length=2, choices=(('男', '男'), ('女', '女'),), null=True, blank=True, help_text='性别')
     marital_status = models.CharField('婚姻状况', help_text='婚姻状况', null=True, blank=True,
                                       max_length=5, choices=(('已婚', '已婚'), ('未婚', '未婚'),))
