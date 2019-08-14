@@ -53,6 +53,7 @@ class UserSerializer(serializers.ModelSerializer):
             'description',
             'groups',
             'readed_licence',
+            'sort_num',
         )
 
 
