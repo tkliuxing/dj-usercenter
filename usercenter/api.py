@@ -30,7 +30,7 @@ class ChangePasswordApi(viewsets.GenericViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     """ViewSet for the Task class"""
 
-    queryset = models.User.objects.exclude(username='AnonymousUser')
+    queryset = models.User.objects.exclude(username='AnonymousUser', is_active=False)
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
@@ -48,6 +48,10 @@ class UserViewSet(viewsets.ModelViewSet):
         if self.request.data.get('password'):
             serializer.instance.set_password(self.request.data.get('password'))
             serializer.instance.save()
+
+    def perform_destroy(self, instance):
+        instance.is_active = False
+        instance.save()
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -100,6 +104,20 @@ class UserDepChangeViewSet(viewsets.ModelViewSet):
 class DepartmentMoveView(viewsets.GenericViewSet):
     queryset = models.Department.objects.none()
     serializer_class = serializers.DepartmentMoveSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'error': False, 'msg': '修改成功'})
+        else:
+            return Response({'error': True, 'msg': serializer.errors})
+
+
+class UserOrderView(viewsets.GenericViewSet):
+    queryset = models.User.objects.none()
+    serializer_class = serializers.UserOrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def create(self, request, *args, **kwargs):

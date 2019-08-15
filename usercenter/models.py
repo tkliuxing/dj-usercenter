@@ -108,6 +108,22 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.username
 
+    def move_to(self, target, position):
+        users = target.department.users.exclude(pk=self.pk).values_list('pk', flat=True).order_by('sort_num', '-pk')
+        users = list(users)
+        try:
+            target_index = users.index(target.pk)
+        except ValueError:
+            return
+        if position == 'left':
+            users = users[:target_index] + [self.pk] + users[target_index:]
+        elif position == 'right':
+            users = users[:target_index+1] + [self.pk] + users[target_index+1:]
+        else:
+            return
+        for index, uid in enumerate(users):
+            User.objects.filter(pk=uid).update(sort_num=index)
+
 
 # 机构部门模型
 class Department(MPTTModel):

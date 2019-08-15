@@ -159,8 +159,8 @@ class DepartmentMoveSerializer(serializers.Serializer):
         help_text='目标部门ID'
     )
     position = serializers.ChoiceField(
-        label='目标部门ID',
-        help_text='目标部门ID',
+        label='位置',
+        help_text='位置',
         choices=POSITION_CHOICES
     )
 
@@ -174,3 +174,34 @@ class DepartmentMoveSerializer(serializers.Serializer):
         target = models.Department.objects.get(pk=validated_data['target'])
         department.move_to(target, validated_data['position'])
         return department
+
+
+class UserOrderSerializer(serializers.Serializer):
+    USER_POSITION_CHOICES = (
+        ('left', '之前'),
+        ('right', '之后'),
+    )
+    user = serializers.IntegerField(
+        label='当前用户ID',
+        help_text='当前用户ID'
+    )
+    target = serializers.IntegerField(
+        label='目标用户ID',
+        help_text='目标用户ID'
+    )
+    position = serializers.ChoiceField(
+        label='位置',
+        help_text='位置',
+        choices=USER_POSITION_CHOICES
+    )
+
+    def update(self, instance, validated_data):
+        target = models.User.objects.get(pk=validated_data['target'])
+        instance.move_to(target, validated_data['position'])
+        return instance
+
+    def create(self, validated_data):
+        user = models.User.objects.get(pk=validated_data['user'])
+        target = models.User.objects.get(pk=validated_data['target'])
+        user.move_to(target, validated_data['position'])
+        return user
