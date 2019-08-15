@@ -85,7 +85,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         #     ("can_audit_task", "可审批任务"),
         #     ("can_audit_work", "可审批工作纪实"),
         # )
-        ordering = ['department', 'sort_num']
+        ordering = ['department', 'sort_num', '-pk']
 
     def get_full_name(self):
         return self.full_name
