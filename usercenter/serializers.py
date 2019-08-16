@@ -58,12 +58,15 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class GroupUserSerializer(serializers.ModelSerializer):
+    department_name = serializers.CharField(source='department.name', read_only=True)
+
     class Meta:
         model = models.User
         fields = (
             'pk',
             'username',
-            'full_name'
+            'full_name',
+            'department_name',
         )
 
 

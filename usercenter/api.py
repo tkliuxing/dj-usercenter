@@ -34,7 +34,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['full_name', 'department']
+    filterset_fields = ['full_name', 'department', 'is_active']
     search_fields = ['full_name']
 
     def perform_create(self, serializer):
