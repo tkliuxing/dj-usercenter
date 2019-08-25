@@ -1,9 +1,9 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from django.views.generic import CreateView, DetailView, UpdateView, DeleteView, ListView
+from django.views.generic import CreateView, DetailView, UpdateView, DeleteView, ListView, TemplateView
 from django.views.generic import FormView
 from django_filters.views import FilterView
 
@@ -168,3 +168,61 @@ class DepartmentDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteVi
 
     def get_success_url(self):
         return reverse('department_tips')
+
+
+class PasswordChangeView(LoginRequiredMixin, FormView):
+    form_class = PasswordChangeForm
+    template_name = 'usercenter/password_change.html'
+
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
+        return form_class(user=self.request.user, **self.get_form_kwargs())
+
+    def form_valid(self, form):
+        from django.contrib.auth import authenticate
+        from django.contrib.auth.views import auth_login
+        user = form.save()
+        user = authenticate(self.request, username=user.username, password=form.cleaned_data['new_password1'])
+        auth_login(self.request, user)
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse('changepwdsuccess')
+
+
+class PasswordChangeSuccessView(TemplateView):
+    template_name = 'usercenter/password_change_success.html'
+
+
+class UserOrderView(LoginRequiredMixin, FormView):
+    form_class = forms.UserOrderForm
+    template_name = 'usercenter/user_order.html'
+
+    def get_form(self, form_class=None):
+        user = self.get_user()
+        form = forms.UserOrderForm(
+            users=user.department.users.exclude(pk=user.pk),
+            **self.get_form_kwargs()
+        )
+        return form
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['user'] = self.get_user()
+        return context_data
+
+    def get_initial(self):
+        return {'user': self.get_user().pk}
+
+    def form_valid(self, form):
+        result = super().form_valid(form)
+        form.save()
+        return result
+
+    def get_user(self):
+        return models.User.objects.get(pk=self.kwargs['pk'])
+
+    def get_success_url(self):
+        user = self.get_user()
+        return reverse('userlist') + '?department=' + str(user.department.pk)

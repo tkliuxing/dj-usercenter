@@ -26,6 +26,7 @@ urlpatterns = (
     url(r'user/detail/(?P<pk>\d+)/$', views.UserDetailView.as_view(), name='user_detail'),
     url(r'user/update/(?P<pk>\d+)/', views.UserUpdateView.as_view(), name='user_update'),
     url(r'user/delete/(?P<pk>\d+)/', views.UserDeleteView.as_view(), name='user_delete'),
+    url(r'user/order/(?P<pk>\d+)/', views.UserOrderView.as_view(), name='user_order'),
     url(r'department/$', views.DepartmentListView.as_view(), name='department_list'),  # 组织机构列表
     url(r'department/add/$', views.DepartmentCreateView.as_view(), name='department_add'),  # 组织机构新增
     url(r'department/update/(?P<pk>\d+)/$', views.DepartmentUpdateView.as_view(), name='department_update'),  # 组织机构新增

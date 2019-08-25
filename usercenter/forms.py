@@ -24,3 +24,37 @@ class DepartmentMoveForm(forms.Form):
     department = forms.ModelChoiceField(queryset=models.Department.objects.all(), widget=forms.HiddenInput)
     departments = TreeNodeChoiceField(queryset=models.Department.objects.all(), label='部门')
     position = forms.ChoiceField(label='位置', choices=POSITION_CHOICES)
+
+
+class UserOrderForm(forms.Form):
+    USER_POSITION_CHOICES = (
+        ('left', '之前'),
+        ('right', '之后'),
+    )
+    user = forms.IntegerField(
+        label='当前用户',
+        help_text='当前用户',
+        widget=forms.HiddenInput
+    )
+    target = forms.ModelChoiceField(
+        label='目标用户',
+        help_text='目标用户',
+        queryset=models.User.objects.none()
+    )
+    position = forms.ChoiceField(
+        label='位置',
+        help_text='位置',
+        choices=USER_POSITION_CHOICES
+    )
+
+    def __init__(self, users=None, *args, **kwargs):
+        super(UserOrderForm, self).__init__(*args, **kwargs)
+        if users:
+            self.fields['target'].queryset = users
+
+    def save(self):
+        validated_data = self.cleaned_data
+        user = models.User.objects.get(pk=validated_data['user'])
+        target = validated_data['target']
+        user.move_to(target, validated_data['position'])
+        return user
