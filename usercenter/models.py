@@ -106,7 +106,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             send_mail(subject, message, from_email, [self.email], **kwargs)
 
     def __str__(self):
-        return self.username
+        return self.full_name
 
     def move_to(self, target, position):
         users = target.department.users.exclude(pk=self.pk).values_list('pk', flat=True).order_by('sort_num', '-pk')
