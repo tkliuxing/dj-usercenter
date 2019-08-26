@@ -37,10 +37,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
 class UserCreateView(LoginRequiredMixin, CreateView):
     model = models.User
     # 要获取显示的数据信息
-    fields = ['username', 'full_name', 'email', 'phone', 'mobile', 'inner_code', 'employee_position',
-              'employee_rank', 'sex', 'marital_status', 'home_address', 'birthplace', 'birthday',
-              'nationality', 'political_status', 'educational_level', 'sort_num',
-              'description', 'department', 'is_active']
+    form_class = forms.UserListForm
     template_name = 'usercenter/user_add.html'
 
     def get_initial(self):
