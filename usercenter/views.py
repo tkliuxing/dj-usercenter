@@ -1,8 +1,8 @@
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView, ListView, TemplateView
 from django.views.generic import FormView
 from django_filters.views import FilterView
@@ -226,3 +226,16 @@ class UserOrderView(LoginRequiredMixin, FormView):
     def get_success_url(self):
         user = self.get_user()
         return reverse('userlist') + '?department=' + str(user.department.pk)
+
+
+class MyInfoUpdateView(LoginRequiredMixin, UpdateView):
+    form_class = forms.MyInfoForm
+    template_name = 'usercenter/myinfo.html'
+    success_url = reverse_lazy('myinfo_success')
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+
+class MyInfoUpdateSuccessView(TemplateView):
+    template_name = 'usercenter/password_change_success.html'

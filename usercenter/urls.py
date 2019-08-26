@@ -21,6 +21,8 @@ router.register(r'myinfo', api.MyInfoViewSet)
 urlpatterns = (
     # urls for Django Rest Framework API
     path('api/v1/', include(router.urls)),
+    url(r'myinfo/0/$', views.MyInfoUpdateView.as_view(), name='myinfo'),
+    url(r'myinfo/success/$', views.MyInfoUpdateSuccessView.as_view(), name='myinfo_success'),
     url(r'user/$', views.UserListView.as_view(), name='userlist'),
     url(r'user/add/', views.UserCreateView.as_view(), name='user_add'),
     url(r'user/detail/(?P<pk>\d+)/$', views.UserDetailView.as_view(), name='user_detail'),

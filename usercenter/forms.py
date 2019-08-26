@@ -14,6 +14,15 @@ class UserForm(forms.ModelForm):
                   'description', 'department', 'is_active']
 
 
+class MyInfoForm(forms.ModelForm):
+    class Meta:
+        model = models.User
+        fields = ['full_name', 'email', 'phone', 'mobile', 'employee_position',
+                  'employee_rank', 'sex', 'marital_status', 'home_address', 'birthplace', 'birthday',
+                  'nationality', 'political_status', 'educational_level',
+                  'description']
+
+
 class DepartmentMoveForm(forms.Form):
     POSITION_CHOICES = (
         ('first-child', '第一个子部门'),
