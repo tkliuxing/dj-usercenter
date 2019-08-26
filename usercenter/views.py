@@ -6,6 +6,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView, ListView, TemplateView
 from django.views.generic import FormView
 from django_filters.views import FilterView
+from django.contrib.auth.models import Group
 
 from . import forms
 from . import models
@@ -132,6 +133,13 @@ class DepartmentCreateView(LoginRequiredMixin, CreateView):
 class DepartmentListView(LoginRequiredMixin, ListView):
     model = models.Department
     context_object_name = 'department'
+
+
+# 组织机构信息
+class GroupListView(LoginRequiredMixin, ListView):
+    queryset = Group.objects.all()
+    context_object_name = 'group'
+    template_name = 'usercenter/user_group.html'
 
 
 # 组织机构修改信息视图
