@@ -37,7 +37,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
 class UserCreateView(LoginRequiredMixin, CreateView):
     model = models.User
     # 要获取显示的数据信息
-    form_class = forms.UserListForm
+    form_class = forms.UserForm
     template_name = 'usercenter/user_add.html'
 
     def get_initial(self):
