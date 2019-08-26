@@ -84,11 +84,15 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 
     # 保存数据
     def form_valid(self, form):
+        passwd = self.get_object().password
         user = form.save()
         password = self.request.POST.get('password')
         # 判断密码是否存在
         if password:
             user.set_password(password)
+            user.save()
+        else:
+            user.password = passwd
             user.save()
         self.object = user
         return HttpResponseRedirect(reverse('userlist') + "?department=" + str(user.department_id))

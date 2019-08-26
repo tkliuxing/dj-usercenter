@@ -5,6 +5,7 @@ from . import models
 
 class UserForm(forms.ModelForm):
     department = TreeNodeChoiceField(queryset=models.Department.objects.all())
+    password = forms.CharField(required=False, label='密码', widget=forms.PasswordInput)
 
     class Meta:
         model = models.User
