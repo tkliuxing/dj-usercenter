@@ -11,7 +11,7 @@ class UserForm(forms.ModelForm):
         fields = ['username', 'full_name', 'email', 'phone', 'mobile', 'inner_code', 'employee_position',
                   'employee_rank', 'sex', 'marital_status', 'home_address', 'birthplace', 'birthday',
                   'nationality', 'political_status', 'educational_level', 'sort_num',
-                  'description', 'department', 'is_active']
+                  'description', 'department', 'is_active', 'password']
 
 
 class MyInfoForm(forms.ModelForm):

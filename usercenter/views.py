@@ -61,6 +61,21 @@ class UserCreateView(LoginRequiredMixin, CreateView):
         return HttpResponseRedirect(reverse('userlist') + "?department=" + str(user.department_id))
 
 
+class UserDepChangeView(LoginRequiredMixin, CreateView):
+    model = models.UserDepChange
+    # 要获取显示的数据信息
+    fields = ['user', 'old_department', 'new_department']
+    template_name = 'usercenter/user_dep_change.html'
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['user_data'] = models.User.objects.get(pk=self.kwargs['pk'])
+        return context_data
+
+    def get_success_url(self):
+        return reverse('userlist') + '?department=' + str(self.object.new_department.pk)
+
+
 # 用户修改信息视图
 class UserUpdateView(LoginRequiredMixin, UpdateView):
     model = models.User

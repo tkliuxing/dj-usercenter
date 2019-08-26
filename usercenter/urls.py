@@ -17,7 +17,6 @@ router.register(r'userdepchange', api.UserDepChangeViewSet)
 router.register(r'changepwd', api.ChangePasswordApi)
 router.register(r'myinfo', api.MyInfoViewSet)
 
-
 urlpatterns = (
     # urls for Django Rest Framework API
     path('api/v1/', include(router.urls)),
@@ -29,6 +28,7 @@ urlpatterns = (
     url(r'user/update/(?P<pk>\d+)/', views.UserUpdateView.as_view(), name='user_update'),
     url(r'user/delete/(?P<pk>\d+)/', views.UserDeleteView.as_view(), name='user_delete'),
     url(r'user/order/(?P<pk>\d+)/', views.UserOrderView.as_view(), name='user_order'),
+    url(r'user/dep/(?P<pk>\d+)/', views.UserDepChangeView.as_view(), name='user_dep'),  # 部门变更
     url(r'user/passwdchange/$', views.PasswordChangeView.as_view(), name='passwdchange'),
     url(r'user/passwdchange/success/$', views.PasswordChangeSuccessView.as_view(), name='changepwdsuccess'),
     url(r'department/$', views.DepartmentListView.as_view(), name='department_list'),  # 组织机构列表
