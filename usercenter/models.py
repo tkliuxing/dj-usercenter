@@ -9,6 +9,7 @@ from django.contrib.auth.models import (
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 
+
 # 用户控制器
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -39,11 +40,6 @@ class UserManager(BaseUserManager):
 
 # 用户模型
 class User(AbstractBaseUser, PermissionsMixin):
-    EMPLOYEE_RANKS = (
-        ('领导班子', '领导班子'),
-        ('中层干部', '中层干部'),
-        ('普通', '普通'),
-    )
     username_validator = UnicodeUsernameValidator()
     username = models.CharField(
         '用户名', max_length=150, unique=True,
@@ -60,10 +56,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField('创建时间', default=timezone.now, help_text='创建时间')
     inner_code = models.CharField('内部工号', max_length=32, null=True, blank=True, help_text='内部工号')
     employee_position = models.CharField('职务', max_length=32, null=True, blank=True, help_text='职务')
-    employee_rank = models.CharField('职别', max_length=32, choices=EMPLOYEE_RANKS, null=True, blank=True)
+    employee_rank = models.CharField('职级', help_text='职级', max_length=32, null=True, blank=True)
+    sex = models.CharField('性别', max_length=2, choices=(('男', '男'), ('女', '女'),), null=True, blank=True, help_text='性别')
+    marital_status = models.CharField('婚姻状况', help_text='婚姻状况', null=True, blank=True,
+                                      max_length=5, choices=(('已婚', '已婚'), ('未婚', '未婚'),))
+    home_address = models.CharField('家庭住址', help_text='家庭住址', max_length=200, null=True, blank=True)
+    birthplace = models.CharField('籍贯', help_text='籍贯', max_length=100, null=True, blank=True)
+    birthday = models.DateField('出生年月日', help_text='出生年月日', null=True, blank=True)
+    nationality = models.CharField('民族', help_text='民族', max_length=20, null=True, blank=True)
+    political_status = models.CharField('政治面貌', help_text='政治面貌', max_length=50, blank=True, null=True)
+    educational_level = models.CharField('文化程度', help_text='文化程度', max_length=20, blank=True, null=True)
     description = models.TextField('备注', null=True, blank=True, help_text='备注')
     department = models.ForeignKey('Department', null=True, blank=True, related_name='users',
                                    on_delete=models.SET_NULL, verbose_name='部门', help_text='部门')
+    sort_num = models.IntegerField('排序编号', help_text='排序编号', null=True, blank=True, default=0, db_index=True)
+    readed_licence = models.BooleanField('已阅读用户协议', help_text='已阅读用户协议', default=False, null=True, blank=True)
 
     objects = UserManager()
 
@@ -78,7 +85,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         #     ("can_audit_task", "可审批任务"),
         #     ("can_audit_work", "可审批工作纪实"),
         # )
-        ordering = ['pk']
+        ordering = ['department', 'sort_num', '-pk']
 
     def get_full_name(self):
         return self.full_name
@@ -99,7 +106,23 @@ class User(AbstractBaseUser, PermissionsMixin):
             send_mail(subject, message, from_email, [self.email], **kwargs)
 
     def __str__(self):
-        return self.username
+        return self.full_name
+
+    def move_to(self, target, position):
+        users = target.department.users.exclude(pk=self.pk).values_list('pk', flat=True).order_by('sort_num', '-pk')
+        users = list(users)
+        try:
+            target_index = users.index(target.pk)
+        except ValueError:
+            return
+        if position == 'left':
+            users = users[:target_index] + [self.pk] + users[target_index:]
+        elif position == 'right':
+            users = users[:target_index+1] + [self.pk] + users[target_index+1:]
+        else:
+            return
+        for index, uid in enumerate(users):
+            User.objects.filter(pk=uid).update(sort_num=index)
 
 
 # 机构部门模型
@@ -132,3 +155,29 @@ class Department(MPTTModel):
     def get_dep_path_name(self):
         names = self.get_ancestors(include_self=True).values_list('name', flat=True)
         return "/".join(names)
+
+
+class UserDepChange(models.Model):
+    """用户部门变更记录"""
+    user = models.ForeignKey('User', verbose_name='用户', on_delete=models.CASCADE,
+                             help_text='用户', related_name='dep_changes')
+    old_department = models.ForeignKey('Department', verbose_name='老部门', related_name='+',
+                                       on_delete=models.CASCADE, help_text='老部门')
+    new_department = models.ForeignKey('Department', verbose_name='新部门', related_name='+',
+                                       on_delete=models.CASCADE, help_text='新部门')
+    create_time = models.DateTimeField('更改时间', auto_now_add=True, blank=True)
+
+    class Meta:
+        verbose_name = '用户部门变更记录'
+        verbose_name_plural = verbose_name
+        ordering = ['create_time']
+
+    def __str__(self):
+        return "{0} {1} {2}->{3}".format(
+            self.user.full_name, self.create_time, self.old_department, self.new_department
+        )
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super().save(force_insert, force_update, using, update_fields)
+        self.user.department = self.new_department
+        self.user.save()
